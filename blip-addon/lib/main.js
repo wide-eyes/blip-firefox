@@ -15,18 +15,28 @@ var button = buttons.ActionButton({
 button.on("click", handleClick)
 
 function reqListener () {
-  console.log(this.responseText);
+  var blip = JSON.parse(this.responseText)
+
+  var panel = require("sdk/panel").Panel({
+    width: 200,
+    height: 100,
+    contentURL: "data:text/plain," + blip["text"]
+  });
+
+  panel.show();
+
+  var notifications = require("sdk/notifications");
+  notifications.notify({
+    title: "Blip",
+    text: blip["text"],
+  });
 }
 
 function handleClick(state) {
-  console.log("You clicked '" + state.label + "'");
+  // console.log("You clicked '" + state.label + "'");
 
   var oReq = new xhr.XMLHttpRequest();
   oReq.onload = reqListener;
-  oReq.open("GET", "https://www.mozilla.org/", true);
+  oReq.open("GET", "http://localhost:5000/blip", true);
   oReq.send();
-
-  tabs.open({
-	url: "https://www.mozilla.org/",
-  });
 }
